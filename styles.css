@@ -126,13 +126,51 @@ button {
   color: white;
   padding: 10px 15px;
   cursor: pointer;
-  margin-right: 5px;
-  
+  margin: 5px;
 }
 
-button:disabled {
-  background-color: #bdc3c7;
-  cursor: not-allowed;
+.up-button {
+  display: flex;
+  gap: 5px;
+  border: bisque;
+  background-color: #3498db;
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  cursor: pointer;
+
+  padding: 10px 16px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  transition: color 100ms;
+  vertical-align: baseline;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.down-button {
+  background-color: #3498db;
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  cursor: pointer;
+
+  padding: 10px 16px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  transition: color 100ms;
+  vertical-align: baseline;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+button:hover,
+button:focus {
+  background-color: #0a8adf;
 }
 
 input {

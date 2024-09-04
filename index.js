@@ -48,12 +48,12 @@ function createBuilding(floorCount, liftCount) {
                     <span class="floor-text">Floor ${i}</span>
                     ${
                       i < floorCount
-                        ? `<button class="up-button" onclick="callLift(${i}, 'up') ">Up</button>`
+                        ? `<button class="up-button" onclick="callLift(${i}, 'up')" id="up-${i}">Up</button>`
                         : ''
                     }
                     ${
                       i > 1
-                        ? `<button class="down-button" onclick="callLift(${i}, 'down')">Down</button>`
+                        ? `<button class="down-button" onclick="callLift(${i}, 'down')" id="down-${i}">Down</button>`
                         : ''
                     }
                 `;
@@ -82,11 +82,20 @@ function createLiftShaft(floorCount) {
 }
 
 function callLift(targetFloor, direction) {
+  const button = document.getElementById(`${direction}-${targetFloor}`);
+  if (button) {
+    button.disabled = true;
+  }
+
   const availableLift = lifts.find((lift) => !lift.isMoving);
   if (availableLift) {
     moveLift(availableLift, targetFloor, direction);
   } else {
-    console.log('.');
+    console.log('No available lifts');
+    // Re-enable the button if no lift is available
+    if (button) {
+      button.disabled = false;
+    }
   }
 }
 
@@ -103,6 +112,12 @@ function moveLift(lift, targetFloor, direction) {
   setTimeout(() => {
     lift.currentFloor = targetFloor;
     openDoors(lift);
+    
+    // Re-enable buttons when lift reaches the floor
+    const upButton = document.getElementById(`up-${targetFloor}`);
+    const downButton = document.getElementById(`down-${targetFloor}`);
+    if (upButton) upButton.disabled = false;
+    if (downButton) downButton.disabled = false;
   }, moveTime);
 }
 
