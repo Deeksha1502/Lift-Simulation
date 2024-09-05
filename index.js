@@ -47,7 +47,7 @@ function createBuilding(floorCount) {
     floor.innerHTML = `
                     <span class="floor-text">Floor ${i}</span>
                     ${
-                      i < floorCount || floorCount === 1
+                      i < floorCount ||floorCount === 1
                         ? `<button class="up-button" onclick="callLift(${i}, 'up')" id="up-${i}">Up</button>`
                         : ''
                     }
