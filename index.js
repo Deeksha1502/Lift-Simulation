@@ -6,7 +6,7 @@ function initializeSimulation() {
   const liftCount = parseInt(document.getElementById('liftCount').value);
 
   if (isNaN(floorCount) || isNaN(liftCount) || floorCount < 1 || liftCount < 0) {
-    alert('Please enter a floor numbers greater than or equal to 1');
+    alert('Please enter the floor and lift value greater than or equal to 1');
     return;
   }
 
