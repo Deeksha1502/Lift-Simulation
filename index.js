@@ -5,8 +5,8 @@ function initializeSimulation() {
   const floorCount = parseInt(document.getElementById('floorCount').value);
   const liftCount = parseInt(document.getElementById('liftCount').value);
 
-  if (isNaN(floorCount) || isNaN(liftCount) || floorCount < 2 || liftCount < 2) {
-    alert('Please enter a number greater than 1');
+  if (isNaN(floorCount) || isNaN(liftCount) || floorCount < 1 || liftCount < 0) {
+    alert('Please enter a floor numbers greater than or equal to 1');
     return;
   }
 
@@ -47,7 +47,7 @@ function createBuilding(floorCount) {
     floor.innerHTML = `
                     <span class="floor-text">Floor ${i}</span>
                     ${
-                      i < floorCount
+                      i < floorCount || floorCount === 1
                         ? `<button class="up-button" onclick="callLift(${i}, 'up')" id="up-${i}">Up</button>`
                         : ''
                     }
