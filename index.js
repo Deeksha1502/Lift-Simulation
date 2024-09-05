@@ -32,7 +32,7 @@ function initializeSimulation() {
   }
 }
 
-function createBuilding(floorCount, liftCount) {
+function createBuilding(floorCount) {
   const building = document.createElement('div');
   building.className = 'building';
   building.style.height = `${floorCount * 100}px`;
@@ -67,7 +67,7 @@ function createBuilding(floorCount, liftCount) {
   return building;
 }
 
-function createLiftShaft(floorCount) {
+function createLiftShaft() {
   const liftShaft = document.createElement('div');
   liftShaft.className = 'lift-shaft';
   liftShaft.innerHTML = `
@@ -88,11 +88,16 @@ function callLift(targetFloor, direction) {
   }
 
   const availableLift = lifts.find((lift) => !lift.isMoving);
+
+  if (targetFloor === 1) {
+    openDoors(availableLift);
+  }
+
   if (availableLift) {
     moveLift(availableLift, targetFloor, direction);
   } else {
-    console.log('No available lifts');
-    // Re-enable the button if no lift is available
+    console.log('.');
+
     if (button) {
       button.disabled = false;
     }
@@ -112,8 +117,7 @@ function moveLift(lift, targetFloor, direction) {
   setTimeout(() => {
     lift.currentFloor = targetFloor;
     openDoors(lift);
-    
-    // Re-enable buttons when lift reaches the floor
+
     const upButton = document.getElementById(`up-${targetFloor}`);
     const downButton = document.getElementById(`down-${targetFloor}`);
     if (upButton) upButton.disabled = false;
