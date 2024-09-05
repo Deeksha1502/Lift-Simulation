@@ -13,7 +13,7 @@ body {
 .building {
   margin-top: 50px;
   height: 1000px;
-  width: fit-content;
+  width: 100%;
   margin-left: 20px;
 
   display: flex;
@@ -41,6 +41,7 @@ body {
 
 .lifts-container {
   display: flex;
+  margin-left: 20px;
 }
 
 .lift-shaft {
@@ -127,6 +128,7 @@ button {
   padding: 10px 15px;
   cursor: pointer;
   margin: 5px;
+  font-weight: bold;
 }
 
 .up-button {
