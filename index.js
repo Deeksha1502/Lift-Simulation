@@ -89,14 +89,14 @@ function callLift(targetFloor, direction) {
 
   const availableLift = lifts.find((lift) => !lift.isMoving);
 
-  if (targetFloor === 1) {
-    openDoors(availableLift);
-  }
-
   if (availableLift) {
+    if (targetFloor === 1) {
+      openDoors(availableLift);
+    }
+
     moveLift(availableLift, targetFloor, direction);
   } else {
-    console.log('.');
+    console.log('Please wait while the lift arrives');
 
     if (button) {
       button.disabled = false;
