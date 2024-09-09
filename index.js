@@ -47,7 +47,7 @@ function createBuilding(floorCount) {
     floor.innerHTML = `
                     <span class="floor-text">Floor ${i}</span>
                     ${
-                      i < floorCount ||floorCount === 1
+                      i < floorCount || floorCount === 1
                         ? `<button class="up-button" onclick="callLift(${i}, 'up')" id="up-${i}">Up</button>`
                         : ''
                     }
@@ -89,14 +89,14 @@ function callLift(targetFloor, direction) {
 
   const availableLift = lifts.find((lift) => !lift.isMoving);
 
-  if (targetFloor === 1) {
-    openDoors(availableLift);
-  }
-
   if (availableLift) {
+    if (targetFloor === 1) {
+      openDoors(availableLift);
+    }
+
     moveLift(availableLift, targetFloor, direction);
   } else {
-    console.log('.');
+    console.log('Please wait while the lift arrives');
 
     if (button) {
       button.disabled = false;
