@@ -1,5 +1,6 @@
 let lifts = [];
 let floors = 0;
+let requestQueue = [];
 
 function isValidate(floorCount, liftCount) {
   if (
@@ -32,6 +33,7 @@ function initializeSimulation() {
 
   floors = floorCount;
   lifts = [];
+  requestQueue = [];
   const simulation = document.getElementById('simulation');
   simulation.innerHTML = '';
 
@@ -117,10 +119,7 @@ function callLift(targetFloor, direction) {
     moveLift(availableLift, targetFloor, direction);
   } else {
     console.log('Please wait while the lift arrives');
-
-    if (button) {
-      button.disabled = false;
-    }
+    requestQueue.push({ targetFloor, direction });
   }
 }
 
@@ -140,8 +139,7 @@ function moveLift(lift, targetFloor, direction) {
 
     const upButton = document.getElementById(`up-${targetFloor}`);
     const downButton = document.getElementById(`down-${targetFloor}`);
-    if (upButton) upButton.disabled = false;
-    if (downButton) downButton.disabled = false;
+
   }, moveTime);
 }
 
@@ -158,5 +156,16 @@ function closeDoors(lift) {
     lift.isMoving = false;
     lift.targetFloor = null;
     lift.direction = null;
+    checkQueue();
   }, 500);
+}
+
+function checkQueue() {
+  if (requestQueue.length > 0) {
+    const availableLift = lifts.find((lift) => !lift.isMoving);
+    if (availableLift) {
+      const nextRequest = requestQueue.shift();
+      moveLift(availableLift, nextRequest.targetFloor, nextRequest.direction);
+    }
+  }
 }
