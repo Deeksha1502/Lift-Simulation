@@ -23,11 +23,11 @@ function initializeSimulation() {
   if (
     isNaN(floorCount) ||
     isNaN(liftCount) ||
-    floorCount < 1 ||
-    liftCount < 0 ||
+    floorCount < 2 ||
+    liftCount < 2 ||
     isValidate(floorCount, liftCount)
   ) {
-    alert('Please enter the floor and lift value greater than or equal to 1 ');
+    alert('Please enter the floor and lift value greater than or equal to 2 ');
     return;
   }
 
