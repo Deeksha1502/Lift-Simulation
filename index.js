@@ -109,22 +109,35 @@ function callLift(targetFloor, direction) {
     button.disabled = true;
   }
 
-  const availableLift = lifts.find((lift) => !lift.isMoving);
+  const liftMoving = lifts.find((lift) => lift.targetFloor === targetFloor && lift.isMoving);
+  if (liftMoving) {
+    return;
+  }
 
-  if (availableLift) {
-    if (targetFloor === 1) {
-      openDoors(availableLift);
-    }
+  const liftOnFloor = lifts.find((lift) => lift.currentFloor === targetFloor && !lift.isMoving);
+  if (liftOnFloor) {
+    openAndCloseDoors(liftOnFloor);
+    return;
+  }
 
-    moveLift(availableLift, targetFloor, direction);
+  const nearestAvailableLift = findNearestAvailableLift(targetFloor);
+
+  if (nearestAvailableLift) {
+    moveLift(nearestAvailableLift, targetFloor, direction);
   } else {
-    console.log('Please wait while the lift arrives');
     requestQueue.push({ targetFloor, direction });
   }
 }
 
+function findNearestAvailableLift(targetFloor) {
+  return lifts.reduce((nearest, lift) => {
+    if (lift.isMoving) return nearest;
+    const distance = Math.abs(lift.currentFloor - targetFloor);
+    return !nearest || distance < Math.abs(nearest.currentFloor - targetFloor) ? lift : nearest;
+  }, null);
+}
+
 function moveLift(lift, targetFloor, direction) {
-  if (lift.isMoving || targetFloor === lift.currentFloor) return;
   lift.isMoving = true;
   lift.targetFloor = targetFloor;
   lift.direction = direction;
@@ -135,37 +148,55 @@ function moveLift(lift, targetFloor, direction) {
 
   setTimeout(() => {
     lift.currentFloor = targetFloor;
-    openDoors(lift);
-
-    const upButton = document.getElementById(`up-${targetFloor}`);
-    const downButton = document.getElementById(`down-${targetFloor}`);
-
+    openAndCloseDoors(lift);
+    enableButtons(targetFloors);
   }, moveTime);
+}
+
+function openAndCloseDoors(lift) {
+  openDoors(lift);
+  setTimeout(() => closeDoors(lift), 2000);
 }
 
 function openDoors(lift) {
   const doors = lift.element.querySelector('.doors');
   doors.classList.add('open');
-  setTimeout(() => closeDoors(lift), 2000);
 }
 
 function closeDoors(lift) {
   const doors = lift.element.querySelector('.doors');
   doors.classList.remove('open');
   setTimeout(() => {
-    lift.isMoving = false;
-    lift.targetFloor = null;
-    lift.direction = null;
+    resetLiftState(lift);
     checkQueue();
+    enableButtons(lift.currentFloor);
   }, 500);
+}
+
+function resetLiftState(lift) {
+  lift.isMoving = false;
+  lift.targetFloor = null;
+  lift.direction = null;
 }
 
 function checkQueue() {
   if (requestQueue.length > 0) {
-    const availableLift = lifts.find((lift) => !lift.isMoving);
+    const availableLift = findNearestAvailableLift(requestQueue[0].targetFloor);
     if (availableLift) {
       const nextRequest = requestQueue.shift();
       moveLift(availableLift, nextRequest.targetFloor, nextRequest.direction);
     }
+  }
+}
+function enableButtons(floor) {
+  const upButton = document.getElementById(`up-${floor}`);
+  const downButton = document.getElementById(`down-${floor}`);
+  if (upButton) upButton.disabled = false;
+  if (downButton) downButton.disabled = false;
+}
+
+function enableAllButtons() {
+  for (let i = 1; i <= floors; i++) {
+    enableButtons(i);
   }
 }
