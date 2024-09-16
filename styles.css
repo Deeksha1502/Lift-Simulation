@@ -74,7 +74,6 @@ input:focus {
   height: 100px;
   background-color: #000000;
   transition: bottom 2s ease-in-out;
-  border-top: 1px solid #999;
 }
 
 .doors {
