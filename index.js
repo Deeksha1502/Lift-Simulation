@@ -34,6 +34,7 @@ function initializeSimulation() {
       targetFloor: null,
       isMoving: false,
       direction: null,
+      doorsOperating: false,
     });
   }
 }
@@ -98,7 +99,9 @@ function callLift(targetFloor, direction) {
     return;
   }
 
-  const liftOnFloor = lifts.find((lift) => lift.currentFloor === targetFloor && !lift.isMoving);
+  const liftOnFloor = lifts.find(
+    (lift) => lift.currentFloor === targetFloor && !lift.isMoving && !lift.doorsOperating
+  );
   if (liftOnFloor) {
     openAndCloseDoors(liftOnFloor);
     return;
@@ -107,39 +110,64 @@ function callLift(targetFloor, direction) {
   const nearestAvailableLift = findNearestAvailableLift(targetFloor);
 
   if (nearestAvailableLift) {
-    moveLift(nearestAvailableLift, targetFloor, direction);
+    prepareLiftMovement(nearestAvailableLift, targetFloor, direction);
   } else {
     requestQueue.push({ targetFloor, direction });
   }
 }
+function prepareLiftMovement(lift, targetFloor, direction) {
+  lift.targetFloor = targetFloor;
+  lift.direction = direction;
+  if (lift.doorsOperating) {
+    return;
+  }
+  if (lift.currentFloor !== targetFloor) {
+    closeDoorsAndMove(lift);
+  } else {
+    openAndCloseDoors(lift);
+  }
+}
 
+function closeDoorsAndMove(lift) {
+  if (lift.doorsOperating) return;
+  lift.doorsOperating = true;
+  const doors = lift.element.querySelector('.doors');
+  doors.classList.remove('open');
+  setTimeout(() => {
+    lift.doorsOperating = false;
+    moveLift(lift);
+  }, 500);
+}
 function findNearestAvailableLift(targetFloor) {
   return lifts.reduce((nearest, lift) => {
-    if (lift.isMoving) return nearest;
+    if (lift.isMoving || lift.doorsOperating) return nearest;
     const distance = Math.abs(lift.currentFloor - targetFloor);
     return !nearest || distance < Math.abs(nearest.currentFloor - targetFloor) ? lift : nearest;
   }, null);
 }
 
-function moveLift(lift, targetFloor, direction) {
+function moveLift(lift) {
   lift.isMoving = true;
-  lift.targetFloor = targetFloor;
-  lift.direction = direction;
+  const targetFloor = lift.targetFloor;
 
-  const moveTime = Math.abs(targetFloor - lift.currentFloor) * 2000;
+  const moveTime = Math.abs(targetFloor - lift.currentFloor) * 2500;
   lift.element.style.transition = `bottom ${moveTime}ms ease-in-out`;
   lift.element.style.bottom = `${(targetFloor - 1) * 100}px`;
 
   setTimeout(() => {
     lift.currentFloor = targetFloor;
+    lift.isMoving = false;
     openAndCloseDoors(lift);
-    enableButtons(targetFloors);
+
+    // enableButtons(targetFloor);
   }, moveTime);
 }
 
 function openAndCloseDoors(lift) {
+  if (lift.doorsOperating) return;
+  lift.doorsOperating = true;
   openDoors(lift);
-  setTimeout(() => closeDoors(lift), 2000);
+  setTimeout(() => closeDoors(lift), 3000);
 }
 
 function openDoors(lift) {
@@ -151,6 +179,7 @@ function closeDoors(lift) {
   const doors = lift.element.querySelector('.doors');
   doors.classList.remove('open');
   setTimeout(() => {
+    lift.doorsOperating = false;
     resetLiftState(lift);
     checkQueue();
     enableButtons(lift.currentFloor);
@@ -168,19 +197,22 @@ function checkQueue() {
     const availableLift = findNearestAvailableLift(requestQueue[0].targetFloor);
     if (availableLift) {
       const nextRequest = requestQueue.shift();
-      moveLift(availableLift, nextRequest.targetFloor, nextRequest.direction);
+
+      setTimeout(() => {
+        prepareLiftMovement(availableLift, nextRequest.targetFloor, nextRequest.direction);
+      }, 0);
     }
   }
 }
-function enableButtons(floor) {
-  const upButton = document.getElementById(`up-${floor}`);
-  const downButton = document.getElementById(`down-${floor}`);
-  if (upButton) upButton.disabled = false;
-  if (downButton) downButton.disabled = false;
+function enableButtons(floors) {
+  for (let i = 1; i <= floors; i++) {
+    const upButton = document.getElementById(`up-${i}`);
+    const downButton = document.getElementById(`down-${i}`);
+    if (upButton) upButton.disabled = false;
+    if (downButton) downButton.disabled = false;
+  }
 }
 
 function enableAllButtons() {
-  for (let i = 1; i <= floors; i++) {
-    enableButtons(i);
-  }
+  enableButtons(floors);
 }
