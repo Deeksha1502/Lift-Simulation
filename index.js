@@ -136,7 +136,7 @@ function closeDoorsAndMove(lift) {
   setTimeout(() => {
     lift.doorsOperating = false;
     moveLift(lift);
-  }, 500);
+  }, 2000);
 }
 function findNearestAvailableLift(targetFloor) {
   return lifts.reduce((nearest, lift) => {
@@ -150,7 +150,7 @@ function moveLift(lift) {
   lift.isMoving = true;
   const targetFloor = lift.targetFloor;
 
-  const moveTime = Math.abs(targetFloor - lift.currentFloor) * 2500;
+  const moveTime = Math.abs(targetFloor - lift.currentFloor) * 3500;
   lift.element.style.transition = `bottom ${moveTime}ms ease-in-out`;
   lift.element.style.bottom = `${(targetFloor - 1) * 100}px`;
 
