@@ -150,7 +150,7 @@ function moveLift(lift) {
   lift.isMoving = true;
   const targetFloor = lift.targetFloor;
 
-  const moveTime = Math.abs(targetFloor - lift.currentFloor) * 3500;
+  const moveTime = Math.abs(targetFloor - lift.currentFloor) * 2000;
   lift.element.style.transition = `bottom ${moveTime}ms ease-in-out`;
   lift.element.style.bottom = `${(targetFloor - 1) * 100}px`;
 
