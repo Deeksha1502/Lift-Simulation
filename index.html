@@ -10,11 +10,14 @@
 
 <body>
     <div id="setup">
-        <h1><b>Lift Simulation</b></h1><label>Enter floors:</label>
-        <input type="number" id="floorCount" class="up-field" min="1" placeholder="Number of floors"></input>
+        <h1><b>Lift Simulation</b></h1>
+        <form id="lift-sim">
+        <label>Enter floors:</label>
+        <input type="number" id="floorCount" class="up-field" min="1" placeholder="Number of floors" required></input>
         <label>Enter lifts:</label>
-        <input type="number" id="liftCount" class="down-field" min="1" placeholder="Number of lifts">
+        <input type="number" id="liftCount" class="down-field" min="1" placeholder="Number of lifts" required >
         <button onclick="initializeSimulation()" class="simulate">Start Simulation</button>
+    </form>
     </div>
 
     <div id="simulation"></div>

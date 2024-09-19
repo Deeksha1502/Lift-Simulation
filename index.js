@@ -2,19 +2,27 @@ let lifts = [];
 let floors = 0;
 let requestQueue = [];
 
-function initializeSimulation() {
+const formID = document.getElementById('lift-sim').addEventListener('submit', function (e) {
+  e.preventDefault();
   const floorCount = parseInt(document.getElementById('floorCount').value);
   const liftCount = parseInt(document.getElementById('liftCount').value);
 
-  if (isNaN(floorCount) || !floorCount || floorCount < 2) {
-    alert('Please enter the floor value greater than 1 ');
+  if (Number.isNaN(floorCount) || !floorCount || floorCount < 2) {
+    alert('Invalid input Please enter the floor value greater than 1 ');
     return;
   }
 
-  if (isNaN(liftCount) || !liftCount || liftCount < 1) {
+  if (Number.isNaN(liftCount) || !liftCount || liftCount < 1) {
     alert('Please enter the lift value greater than or equal to 1 ');
     return;
   }
+
+  initializeSimulation();
+});
+
+function initializeSimulation() {
+  const floorCount = parseInt(document.getElementById('floorCount').value);
+  const liftCount = parseInt(document.getElementById('liftCount').value);
   floors = floorCount;
   lifts = [];
   requestQueue = [];
