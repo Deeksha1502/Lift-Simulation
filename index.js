@@ -7,7 +7,7 @@ const formID = document.getElementById('lift-sim').addEventListener('submit', fu
   const floorCount = parseInt(document.getElementById('floorCount').value);
   const liftCount = parseInt(document.getElementById('liftCount').value);
 
-  if (Number.isNaN(floorCount) || !floorCount || floorCount < 2) {
+  if (Number.isNaN(floorCount) || !floorCount || floorCount < 1) {
     alert('Invalid input Please enter the floor value greater than 1 ');
     return;
   }
