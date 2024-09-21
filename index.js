@@ -126,6 +126,7 @@ function callLift(targetFloor, direction) {
 function prepareLiftMovement(lift, targetFloor, direction) {
   lift.targetFloor = targetFloor;
   lift.direction = direction;
+
   if (lift.doorsOperating) {
     return;
   }
@@ -144,7 +145,7 @@ function closeDoorsAndMove(lift) {
   setTimeout(() => {
     lift.doorsOperating = false;
     moveLift(lift);
-  }, 2000);
+  }, 500);
 }
 function findNearestAvailableLift(targetFloor) {
   return lifts.reduce((nearest, lift) => {
@@ -175,7 +176,7 @@ function openAndCloseDoors(lift) {
   if (lift.doorsOperating) return;
   lift.doorsOperating = true;
   openDoors(lift);
-  setTimeout(() => closeDoors(lift), 3000);
+  setTimeout(() => closeDoors(lift), 2000);
 }
 
 function openDoors(lift) {
@@ -191,7 +192,7 @@ function closeDoors(lift) {
     resetLiftState(lift);
     checkQueue();
     enableButtons(lift.currentFloor);
-  }, 500);
+  }, 2000);
 }
 
 function resetLiftState(lift) {
@@ -206,9 +207,7 @@ function checkQueue() {
     if (availableLift) {
       const nextRequest = requestQueue.shift();
 
-      setTimeout(() => {
-        prepareLiftMovement(availableLift, nextRequest.targetFloor, nextRequest.direction);
-      }, 0);
+      prepareLiftMovement(availableLift, nextRequest.targetFloor, nextRequest.direction);
     }
   }
 }
