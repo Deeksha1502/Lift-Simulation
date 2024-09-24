@@ -102,18 +102,33 @@ function callLift(targetFloor, direction) {
     button.disabled = true;
   }
 
-  const liftMoving = lifts.find(
-    (lift) => lift.targetFloor === targetFloor && lift.isMoving && lift.direction === direction
+  const liftsOnOrToFloor = lifts.filter(
+    (lift) =>
+      (lift.currentFloor === targetFloor && !lift.isMoving) ||
+      (lift.targetFloor === targetFloor && lift.direction === direction)
   );
-  if (liftMoving) {
+  if (targetFloor === 1 && direction === 'up') {
+    const liftonGround = liftsOnOrToFloor.find((lift) => lift.currentFloor === 1);
+    if (liftonGround) {
+      console.log('lift on ground floor');
+
+      openAndCloseDoors(liftonGround);
+      if (button) button.disabled = false;
+      return;
+    }
+  }
+  if (liftsOnOrToFloor.length >= 2) {
+    if (button) button.disabled = false;
     return;
   }
 
-  const liftOnFloor = lifts.find(
-    (lift) => lift.currentFloor === targetFloor && !lift.isMoving && !lift.doorsOperating
+  const liftOnFloorForDirection = liftsOnOrToFloor.find(
+    (lift) => lift.currentFloor === targetFloor && lift.direction === direction
   );
-  if (liftOnFloor) {
-    openAndCloseDoors(liftOnFloor);
+
+  if (liftOnFloorForDirection) {
+    openAndCloseDoors(liftOnFloorForDirection);
+    if (button) button.disabled = false;
     return;
   }
 
@@ -152,6 +167,7 @@ function closeDoorsAndMove(lift) {
 function findNearestAvailableLift(targetFloor) {
   return lifts.reduce((nearest, lift) => {
     if (lift.isMoving || lift.doorsOperating) return nearest;
+    if (lift.currentFloor === targetFloor && lift.direction === direction) return lift;
     const distance = Math.abs(lift.currentFloor - targetFloor);
     return !nearest || distance < Math.abs(nearest.currentFloor - targetFloor) ? lift : nearest;
   }, null);
