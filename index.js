@@ -102,7 +102,9 @@ function callLift(targetFloor, direction) {
     button.disabled = true;
   }
 
-  const liftMoving = lifts.find((lift) => lift.targetFloor === targetFloor && lift.isMoving);
+  const liftMoving = lifts.find(
+    (lift) => lift.targetFloor === targetFloor && lift.isMoving && lift.direction === direction
+  );
   if (liftMoving) {
     return;
   }
@@ -168,7 +170,7 @@ function moveLift(lift) {
     lift.isMoving = false;
     openAndCloseDoors(lift);
 
-    // enableButtons(targetFloor);
+    enableButtons(targetFloor);
   }, moveTime);
 }
 
@@ -220,6 +222,6 @@ function enableButtons(floors) {
   }
 }
 
-function enableAllButtons() {
-  enableButtons(floors);
-}
+// function enableAllButtons() {
+//   enableButtons(floors);
+// }
