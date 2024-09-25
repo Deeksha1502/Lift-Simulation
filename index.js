@@ -98,46 +98,42 @@ function createLiftShaft() {
 
 function callLift(targetFloor, direction) {
   const button = document.getElementById(`${direction}-${targetFloor}`);
-  if (button) {
-    button.disabled = true;
-  }
+  if (button && !button.disabled) {
+    disableButton(button);
 
-  const liftsOnOrToFloor = lifts.filter(
-    (lift) =>
-      (lift.currentFloor === targetFloor && !lift.isMoving) ||
-      (lift.targetFloor === targetFloor && lift.direction === direction)
-  );
-  if (targetFloor === 1 && direction === 'up') {
-    const liftonGround = liftsOnOrToFloor.find((lift) => lift.currentFloor === 1);
-    if (liftonGround) {
-      console.log('lift on ground floor');
+    if (targetFloor === 1) {
+      const liftOnFirstFloor = lifts.find(
+        (lift) => lift.currentFloor === 1 && !lift.isMoving && !lift.doorsOperating
+      );
+      if (liftOnFirstFloor) {
+        openAndCloseDoors(liftOnFirstFloor);
+        return;
+      }
+    }
+   
+    const liftsAtTargetFloor = lifts.filter(
+      (lift) => lift.currentFloor === targetFloor && !lift.isMoving && !lift.doorsOperating
+    );
 
-      openAndCloseDoors(liftonGround);
-      if (button) button.disabled = false;
+   
+    if (liftsAtTargetFloor.length === 2) {
+      liftsAtTargetFloor.forEach((lift) => {
+        if (!lift.doorsOperating) {
+          openAndCloseDoors(lift);
+        }
+      });
       return;
     }
-  }
-  if (liftsOnOrToFloor.length >= 2) {
-    if (button) button.disabled = false;
-    return;
-  }
 
-  const liftOnFloorForDirection = liftsOnOrToFloor.find(
-    (lift) => lift.currentFloor === targetFloor && lift.direction === direction
-  );
-
-  if (liftOnFloorForDirection) {
-    openAndCloseDoors(liftOnFloorForDirection);
-    if (button) button.disabled = false;
-    return;
-  }
-
-  const nearestAvailableLift = findNearestAvailableLift(targetFloor);
-
-  if (nearestAvailableLift) {
-    prepareLiftMovement(nearestAvailableLift, targetFloor, direction);
-  } else {
-    requestQueue.push({ targetFloor, direction });
+    const liftsCalledToFloor = lifts.filter((lift) => lift.targetFloor === targetFloor);
+    if (liftsCalledToFloor.length < 2) {
+      const nearestAvailableLift = findNearestAvailableLift(targetFloor);
+      if (nearestAvailableLift) {
+        prepareLiftMovement(nearestAvailableLift, targetFloor, direction);
+      } else {
+        requestQueue.push({ targetFloor, direction });
+      }
+    }
   }
 }
 function prepareLiftMovement(lift, targetFloor, direction) {
@@ -186,7 +182,7 @@ function moveLift(lift) {
     lift.isMoving = false;
     openAndCloseDoors(lift);
 
-    enableButtons(targetFloor);
+    enableButton(targetFloor);
   }, moveTime);
 }
 
@@ -209,7 +205,8 @@ function closeDoors(lift) {
     lift.doorsOperating = false;
     resetLiftState(lift);
     checkQueue();
-    enableButtons(lift.currentFloor);
+    enableButton(document.getElementById(`up-${lift.currentFloor}`));
+    enableButton(document.getElementById(`down-${lift.currentFloor}`));
   }, 2000);
 }
 
@@ -229,15 +226,16 @@ function checkQueue() {
     }
   }
 }
-function enableButtons(floors) {
-  for (let i = 1; i <= floors; i++) {
-    const upButton = document.getElementById(`up-${i}`);
-    const downButton = document.getElementById(`down-${i}`);
-    if (upButton) upButton.disabled = false;
-    if (downButton) downButton.disabled = false;
+function disableButton(button) {
+  if (button) {
+    button.disabled = true;
+    button.style.cursor = 'not-allowed';
   }
 }
 
-// function enableAllButtons() {
-//   enableButtons(floors);
-// }
+function enableButton(button) {
+  if (button) {
+    button.disabled = false;
+    button.style.cursor = 'pointer';
+  }
+}
