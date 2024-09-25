@@ -95,38 +95,39 @@ function createLiftShaft() {
             `;
   return liftShaft;
 }
-
 function callLift(targetFloor, direction) {
   const button = document.getElementById(`${direction}-${targetFloor}`);
   if (button && !button.disabled) {
     disableButton(button);
 
-    // Check for lifts already at the target floor
+    // Check if any lift is already at the target floor and not moving
     const liftsAtTargetFloor = lifts.filter(
       (lift) => lift.currentFloor === targetFloor && !lift.isMoving && !lift.doorsOperating
     );
 
-    // If there are lifts at the target floor, open their doors
+    // If there's a lift at the target floor, open and close the doors and skip calling other lifts
     if (liftsAtTargetFloor.length > 0) {
       openAndCloseDoors(liftsAtTargetFloor[0]);
+      return; // Skip calling another lift since one is already here
     }
 
-    // Always try to call another lift if less than 2 lifts are at or headed to the target floor
+    // Check how many lifts are at or heading to the target floor
     const liftsCalledToFloor = lifts.filter(
       (lift) => lift.targetFloor === targetFloor || lift.currentFloor === targetFloor
     );
 
+    // Only call another lift if fewer than 2 lifts are headed to or already at the floor
     if (liftsCalledToFloor.length < 2) {
       const nearestAvailableLift = findNearestAvailableLift(targetFloor);
       if (nearestAvailableLift) {
         prepareLiftMovement(nearestAvailableLift, targetFloor, direction);
       } else {
+        // If no available lift, queue the request
         requestQueue.push({ targetFloor, direction });
       }
     }
   }
 }
-
 function prepareLiftMovement(lift, targetFloor, direction) {
   lift.targetFloor = targetFloor;
   lift.direction = direction;
