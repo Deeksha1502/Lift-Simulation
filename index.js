@@ -101,31 +101,21 @@ function callLift(targetFloor, direction) {
   if (button && !button.disabled) {
     disableButton(button);
 
-    if (targetFloor === 1) {
-      const liftOnFirstFloor = lifts.find(
-        (lift) => lift.currentFloor === 1 && !lift.isMoving && !lift.doorsOperating
-      );
-      if (liftOnFirstFloor) {
-        openAndCloseDoors(liftOnFirstFloor);
-        return;
-      }
-    }
-   
+    // Check for lifts already at the target floor
     const liftsAtTargetFloor = lifts.filter(
       (lift) => lift.currentFloor === targetFloor && !lift.isMoving && !lift.doorsOperating
     );
 
-   
-    if (liftsAtTargetFloor.length === 2) {
-      liftsAtTargetFloor.forEach((lift) => {
-        if (!lift.doorsOperating) {
-          openAndCloseDoors(lift);
-        }
-      });
-      return;
+    // If there are lifts at the target floor, open their doors
+    if (liftsAtTargetFloor.length > 0) {
+      openAndCloseDoors(liftsAtTargetFloor[0]);
     }
 
-    const liftsCalledToFloor = lifts.filter((lift) => lift.targetFloor === targetFloor);
+    // Always try to call another lift if less than 2 lifts are at or headed to the target floor
+    const liftsCalledToFloor = lifts.filter(
+      (lift) => lift.targetFloor === targetFloor || lift.currentFloor === targetFloor
+    );
+
     if (liftsCalledToFloor.length < 2) {
       const nearestAvailableLift = findNearestAvailableLift(targetFloor);
       if (nearestAvailableLift) {
@@ -136,6 +126,7 @@ function callLift(targetFloor, direction) {
     }
   }
 }
+
 function prepareLiftMovement(lift, targetFloor, direction) {
   lift.targetFloor = targetFloor;
   lift.direction = direction;
@@ -182,7 +173,12 @@ function moveLift(lift) {
     lift.isMoving = false;
     openAndCloseDoors(lift);
 
-    enableButton(targetFloor);
+    const liftsAtFloor = lifts.filter((lift) => lift.currentFloor === targetFloor);
+    if (liftsAtFloor.length < 2) {
+      enableButton(document.getElementById(`up-${targetFloor}`));
+      enableButton(document.getElementById(`down-${targetFloor}`));
+    }
+    checkQueue();
   }, moveTime);
 }
 
