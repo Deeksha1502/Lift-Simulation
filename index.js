@@ -4,25 +4,40 @@ let requestQueue = [];
 
 const formID = document.getElementById('lift-sim').addEventListener('submit', function (e) {
   e.preventDefault();
-  const floorCount = parseInt(document.getElementById('floorCount').value);
-  const liftCount = parseInt(document.getElementById('liftCount').value);
+  const floorCount = parseInt(document.getElementById('floorCount').value, 10);
+  const liftCount = parseInt(document.getElementById('liftCount').value, 10);
+  floorCount = Math.round(floorCount); 
+  liftCount = Math.round(liftCount);
 
-  if (Number.isNaN(floorCount) || !floorCount || floorCount < 1) {
+  if (
+    Number.isNaN(floorCount) ||
+    !floorCount ||
+    floorCount < 1 ||
+    !isValidPositiveInteger(floorCount)
+  ) {
     alert('Invalid input Please enter the floor value greater than 1 ');
     return;
   }
 
-  if (Number.isNaN(liftCount) || !liftCount || liftCount < 1) {
+  if (
+    Number.isNaN(liftCount) ||
+    !liftCount ||
+    liftCount < 1 ||
+    !isValidPositiveInteger(liftCount)
+  ) {
     alert('Please enter the lift value greater than or equal to 1 ');
     return;
   }
 
   initializeSimulation();
 });
+function isValidPositiveInteger(value) {
+  return /^\d+$/.test(value);
+}
 
 function initializeSimulation() {
-  const floorCount = parseInt(document.getElementById('floorCount').value);
-  const liftCount = parseInt(document.getElementById('liftCount').value);
+  const floorCount = parseInt(document.getElementById('floorCount').value, 10);
+  const liftCount = parseInt(document.getElementById('liftCount').value, 10);
   floors = floorCount;
   lifts = [];
   requestQueue = [];
